@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using SFML.Graphics;
+using System.Drawing;
+using System.Numerics;
+using System.Security.Cryptography;
 using System.Xml.Schema;
 
 static class Constants
@@ -35,10 +38,15 @@ class Cube
     public Face[] Faces = new Face[6];
 }
 
-class ViewFrame
+static class ViewFrame
 {
-    public Cord LeftPoint = new() { X = -50, Y = -50, Z = 0 };
-    public Cord RightPoint = new() { X = 50, Y = 50, Z = 100 };
+    public static Cord LeftPoint = new() { X = -960, Y = -540, Z = 0 };
+    public static Cord RightPoint = new() { X = 960, Y = 540, Z = 100 };
+}
+
+static class Frame
+{
+    public static List<Drawable> Draws = new List<Drawable>();
 }
 
 static class Program
@@ -59,9 +67,14 @@ static class SimpleWindow
         window.SetFramerateLimit(60);
         Cube cube = new();
         Renderer.Get_Cube_Faces(cube);
+        Renderer.World_To_Screen_Space(new Cord{X = 0, Y = 0, Z  = 0}, cube.Faces[0]);
 
         while (window.IsOpen)
         {
+            foreach(var Drawing in Frame.Draws)
+            {
+                window.Draw(Drawing);
+            }
             window.DispatchEvents();
             window.Display();
             window.Clear();
@@ -95,5 +108,83 @@ static class Renderer
         {
             cube.Faces[i] = new Face { P1 = points[i * 4], P2 = points[(i * 4) + 1], P3 = points[(i * 4) + 2], P4 = points[(i * 4) + 3] };
         }
+    }
+
+    public static Cord Get_Face_Center_Point(Face face)
+    {
+        return new Cord
+        {
+            X = (face.P1.X + face.P2.X + face.P3.X + face.P4.X) / 4,
+            Y = (face.P1.Y + face.P2.Y + face.P3.Y + face.P4.Y) / 4,
+            Z = (face.P1.Z + face.P2.Z + face.P3.Z + face.P4.Z) / 4,
+        };
+    }
+
+    public static void Perspective_Shift(Cord Player, Cord point)
+    {
+            double ZAngle = Math.Atan2(point.X - Player.X, point.Y - Player.Y); // X-Y slope
+            double YAngle = Math.Atan2(point.Z - Player.Z, point.X - Player.X); // X-Z slope
+            double XAngle = Math.Atan2(point.Z - Player.Z, point.Y - Player.Y); // Y-Z Slope
+
+            //X is left Right
+            //Y is Forward Back
+            //Z is height
+            double XYAngle = ZAngle * 180 / Math.PI;
+            double YZAngle = XAngle * 180 / Math.PI;
+            double XZAngle = YAngle * 180 / Math.PI;
+
+            // Work on a way to take the viewing angle and distort thee points using that
+    }
+
+    public static Vector2 World_To_Screen_Space(Cord Camera_Pos, Face face)
+    {
+        //Get Distortion of points from play point of view (Angles gotten in Perspective shift)
+        //Scale with distance
+        //Center on screen with 0,0 being 0,0,0
+        //Build shape and display
+
+        Face face2 = face;
+        Cord Center = Get_Face_Center_Point(face);
+        double Dist = Math.Sqrt(Math.Pow(Center.X - Camera_Pos.X, 2) + Math.Pow(Center.Y - Camera_Pos.Y, 2) + Math.Pow(Center.Z - Camera_Pos.Z, 2));
+        face2 = Scale_Face(face, Dist, Center);
+        Shape_Builder(face2, 100);
+        return new Vector2();
+    }
+
+    public static Face Scale_Face(Face face, double Distance, Cord Center)
+    {
+        Distance = 1 / Distance;
+        face.P1 = new Cord { X = face.P1.X * Center.X * Distance, Y = face.P1.Y * Center.Y * Distance, Z = face.P1.Z};
+        face.P2 = new Cord { X = face.P2.X * Center.X * Distance, Y = face.P2.Y * Center.Y * Distance, Z = face.P2.Z};
+        face.P3 = new Cord { X = face.P3.X * Center.X * Distance, Y = face.P3.Y * Center.Y * Distance, Z = face.P3.Z};
+        face.P4 = new Cord { X = face.P4.X * Center.X * Distance, Y = face.P4.Y * Center.Y * Distance, Z = face.P4.Z};
+
+        return face;
+    }
+
+    public static void Shape_Builder(Face face, double scale)
+    {
+        double XSize = 0;
+        double YSize = 0;
+        int XStart = 0;
+        int YStart = 0;
+
+        List<Cord> FaceCords = new List<Cord>{face.P1, face.P2, face.P3, face.P4 };
+
+        XSize = FaceCords.Max(Point => Point.X) - FaceCords.Min(Point => Point.X);
+        YSize = FaceCords.Max(Point => Point.Y) - FaceCords.Min(Point => Point.Y);
+        XSize = XSize * scale;
+        YSize = YSize * scale;
+        XStart = (int)Math.Round(FaceCords.Min(Point => Point.X));
+        YStart = (int)Math.Round(FaceCords.Min(Point => Point.Y));
+    }
+
+    public static void Shape_Finilizer(double XSize, double YSize, int XStart, int YStart)
+    {
+        SFML.Graphics.RectangleShape Shape = new SFML.Graphics.RectangleShape(new SFML.System.Vector2f((float)XSize, (float)YSize));
+        XStart = XStart + (int)Constants.WinLength / 2;
+        YStart = YStart + (int)(Constants.WinHeight / 2);
+        Shape.Position = new SFML.System.Vector2f(XStart, YStart);
+        Frame.Draws.Add(Shape);
     }
 }
