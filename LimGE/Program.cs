@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Security.Cryptography.X509Certificates;
 using System.Xml.Schema;
 
 static class Constants
@@ -15,7 +14,7 @@ struct Cord
 
 struct Face
 {
-    public Cord Start,End;
+    public Cord P1,P2,P3,P4;
 }
 
 class Cube
@@ -76,8 +75,25 @@ static class Renderer
 {
     public static void Get_Cube_Faces(Cube cube)
     {
-        Console.WriteLine("Found all X points that are the same");
+        List<Cord> points = cube.Points.GroupBy(p => p.Z)
+            .Where(group => group.Select(p => p.X).Distinct().Count() > 1 || group.Select(p => p.Y).Distinct().Count() > 1)
+            .SelectMany(group => group)
+            .ToList();
+
+        points = points.Concat(cube.Points.GroupBy(p => p.Y)
+            .Where(group => group.Select(p => p.X).Distinct().Count() > 1 || group.Select(p => p.Z).Distinct().Count() > 1)
+            .SelectMany(group => group).ToList())
+            .ToList();
+
+        points = points.Concat(cube.Points.GroupBy(p => p.X)
+            .Where(group => group.Select(p => p.Y).Distinct().Count() > 1 || group.Select(p => p.Z).Distinct().Count() > 1)
+            .SelectMany(group => group).ToList())
+            .ToList();
+
+
+        for (int i = 0; i != 6; i++)
+        {
+            cube.Faces[i] = new Face { P1 = points[i * 4], P2 = points[(i * 4) + 1], P3 = points[(i * 4) + 2], P4 = points[(i * 4) + 3] };
+        }
     }
-
-
 }
