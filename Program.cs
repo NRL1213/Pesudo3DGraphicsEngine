@@ -63,12 +63,47 @@ namespace window_core
             if (e.Code == SFML.Window.Keyboard.Key.Q)
             {
                 MapData.Direction = (--MapData.Direction + 4) % 4;
+                if (MapData.Direction == 0)
+                    Console.WriteLine("You are now facing north");
+                if (MapData.Direction == 1)
+                    Console.WriteLine("You are now facing east");
+                if (MapData.Direction == 2)
+                    Console.WriteLine("You are now facing south");
+                if (MapData.Direction == 3)
+                    Console.WriteLine("You are now facing west");
 
             }
             if (e.Code == SFML.Window.Keyboard.Key.E)
             {
                 MapData.Direction = ++MapData.Direction % 4;
-                Console.WriteLine(MapData.Direction);
+                if (MapData.Direction == 0)
+                    Console.WriteLine("You are now facing north");
+                if (MapData.Direction == 1)
+                    Console.WriteLine("You are now facing east");
+                if (MapData.Direction == 2)
+                    Console.WriteLine("You are now facing south");
+                if (MapData.Direction == 3)
+                    Console.WriteLine("You are now facing west");
+            }
+            if (e.Code == SFML.Window.Keyboard.Key.W)
+            {
+                if (MapData.Player.X != 0)
+                    --MapData.Player.X;
+            }
+            if (e.Code == SFML.Window.Keyboard.Key.D)
+            {
+                if (MapData.Player.Y != 64)
+                    ++MapData.Player.Y;
+            }
+            if (e.Code == SFML.Window.Keyboard.Key.S)
+            {
+                if (MapData.Player.X != 64)
+                    ++MapData.Player.X;
+            }
+            if (e.Code == SFML.Window.Keyboard.Key.A)
+            {
+                if (MapData.Player.Y != 0)
+                    --MapData.Player.Y;
             }
         }
     }
@@ -84,26 +119,69 @@ namespace window_core
         public List<VisionCollision> ConeProjection(MapData Map, int Direction)
         {
             List<VisionCollision> ret = new List<VisionCollision>();
-            
+            int Depth = 0;
+            int mod = 0;
+            int Side = 0;
+
+            if (Direction == 0)
+            {
+                Depth = (int)MapData.Player.X - 1;
+                mod = -1;
+                Side = (int)MapData.Player.Y;
+            }
+            else if (Direction == 1) 
+            {
+                Depth = (int)MapData.Player.Y + 1;
+                mod = 1;
+                Side = (int)MapData.Player.X;
+            }
+            else if (Direction == 2)
+            {
+                Depth = (int)MapData.Player.X + 1;
+                mod = 1;
+                Side = (int)MapData.Player.Y;
+            }
+            else if (Direction == 3)
+            {
+                Depth = (int)MapData.Player.Y - 1;
+                mod = -1;
+                Side = (int)MapData.Player.X;
+            }
+
             int LeftConeOffset = -1;
             int RightConeOffset = 1;
             bool LeftDone = false;
             bool RightDone = false;
+            int MapNum = 0;
 
-            int Depth = (int)Map.Player.X + 1;
-
-            while (!LeftDone && !RightDone)
+            while (Depth <= 64 && Depth >= 0)
             {
                 for (int i = LeftConeOffset; i <= RightConeOffset; ++i)
                 {
-                    if ((int)Map.Player.Y + i <= 64 && (int)Map.Player.Y + i >= 0 && Map.Map[Depth, (int)Map.Player.Y + i] != 0)
+                    if (Direction == 0 || Direction == 2)
+                        MapNum = Map.Map[Depth, Side + i];
+                    else if (Direction == 1 || Direction == 3)
+                        MapNum = Map.Map[Side + i, Depth];
+                    if (Side + i <= 64 && Side + i >= 0 && MapNum != 0)
                     {
-                        ret.Add(new VisionCollision
+                        if (Direction == 0 || Direction == 2)
                         {
-                            X = (int)Map.Player.Y + i,
-                            Y = Depth,
-                            Z = Depth - (int)Map.Player.X,
-                        });
+                            ret.Add(new VisionCollision
+                            {
+                                X = Side + i,
+                                Y = Depth,
+                                Z = Math.Abs(Depth - (int)MapData.Player.X),
+                            });
+                        }
+                        else
+                        {
+                            ret.Add(new VisionCollision
+                            {
+                                Y = Side + i,
+                                X = Depth,
+                                Z = Math.Abs(Depth - (int)MapData.Player.Y),
+                            });
+                        }
 
                         if (i == LeftConeOffset)
                             LeftDone = true;
@@ -116,15 +194,30 @@ namespace window_core
                     --LeftConeOffset;
                 if (!RightDone)
                     ++RightConeOffset;
-                ++Depth;
+                Depth += mod;
             }
 
-            List<VisionCollision> ret_Sorted = ret
-            .OrderBy(point => point.X)
-            .ThenBy(point => point.Y)
-            .GroupBy(point => point.X)
-            .Select(group => group.OrderBy(point => point.Z).First())
-            .ToList();
+            List<VisionCollision> ret_Sorted = ret;
+
+            if (Direction == 2 || Direction == 0)
+            {
+                ret_Sorted = ret_Sorted
+                .OrderBy(point => point.X)
+                .ThenBy(point => point.Y)
+                .GroupBy(point => point.X)
+                .Select(group => group.OrderBy(point => point.Z).First())
+                .ToList();
+            }
+            else
+            {
+                ret_Sorted = ret_Sorted
+                .OrderBy(point => point.Y)
+                .ThenBy(point => point.X)
+                .GroupBy(point => point.Y)
+                .Select(group => group.OrderBy(point => point.Z).First())
+                .ToList();
+            }
+
 
             return ret_Sorted;
         }

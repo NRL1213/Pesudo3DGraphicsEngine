@@ -9,8 +9,8 @@ namespace window_core
         public List<VisionCollision> GrabAllPoints(MapData Map)
         {
             int Radius = 32; // R * 2 + 1 = View Cone
-            int LeftBound = (int)Map.Player.Y - (Radius + 1);
-            int RightBound = (int)Map.Player.Y + (Radius - 1);
+            int LeftBound = (int)MapData.Player.Y - (Radius + 1);
+            int RightBound = (int)MapData.Player.Y + (Radius - 1);
             int depth = 0;
             List<VisionCollision> WallList = new List<VisionCollision>();
 
@@ -19,17 +19,17 @@ namespace window_core
                 if (i != LeftBound || i != RightBound)
                 {
                     depth = 0;
-                    while (Map.Map[(int)Map.Player.X + depth, i] == 0)
+                    while (Map.Map[(int)MapData.Player.X + depth, i] == 0)
                     {
                         ++depth;
                     }
 
-                    float Distance = Vector2.Distance(Map.Player, new Vector2((int)Map.Player.X + depth, Map.Player.Y));
-                    float LineDistance = Vector2.Distance(Map.Player, new Vector2((int)Map.Player.X + depth, i));
+                    float Distance = Vector2.Distance(MapData.Player, new Vector2((int)MapData.Player.X + depth, MapData.Player.Y));
+                    float LineDistance = Vector2.Distance(MapData.Player, new Vector2((int)MapData.Player.X + depth, i));
                     WallList.Add(new VisionCollision
                     {
                         X = i,
-                        Y = (int)Map.Player.X + depth,
+                        Y = (int)MapData.Player.X + depth,
                         Z = Distance
                     }
                     );
@@ -73,9 +73,7 @@ namespace window_core
                 UpDown = 1;
             }
 
-
-
-            for (int i = (int)Map.Player.Y; i < 64 && i > -1; i += LeftRight)
+            for (int i = (int)MapData.Player.Y; i < 64 && i > -1; i += LeftRight)
             {
                 if ((float)Math.Floor(i / Math.Tan(Rangle)) >= 0 && i > 0)
                 {
@@ -105,7 +103,7 @@ namespace window_core
                     {
                         X = (int)Block.X,
                         Y = (int)Block.Y,
-                        Z = Vector2.Distance(Block, Map.Player)
+                        Z = Vector2.Distance(Block, MapData.Player)
                     };
                 }
                 //Console.WriteLine(Block);
