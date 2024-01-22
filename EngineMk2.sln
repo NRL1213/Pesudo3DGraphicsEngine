@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LimGE", "LimGE.csproj", "{D39341B4-AF58-4C0B-8197-3B8FF6CF63CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineMk2", "EngineMk2.csproj", "{F1757F83-B1BD-4F16-B633-20826705DFAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D39341B4-AF58-4C0B-8197-3B8FF6CF63CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D39341B4-AF58-4C0B-8197-3B8FF6CF63CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D39341B4-AF58-4C0B-8197-3B8FF6CF63CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D39341B4-AF58-4C0B-8197-3B8FF6CF63CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1757F83-B1BD-4F16-B633-20826705DFAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1757F83-B1BD-4F16-B633-20826705DFAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1757F83-B1BD-4F16-B633-20826705DFAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1757F83-B1BD-4F16-B633-20826705DFAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E37CB682-491F-4105-8497-4CE1CB32BA1E}
+		SolutionGuid = {EDEC2F27-B31B-4791-8F73-22C286FD03DC}
 	EndGlobalSection
 EndGlobal
