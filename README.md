@@ -5,4 +5,4 @@
  A projection is drawn outwards and when it collides with a wall it genrates a struct full of collision info\
  These structs are combined into a list and thrown into a renderer which turns info into scaling for distance and colors etc...\
  These render objects are then placed on on a queue\
- This queue is then put onto the screen and cleared after every frame\
+ This queue is then put onto the screen and cleared after every frame
