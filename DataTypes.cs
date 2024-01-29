@@ -2,7 +2,6 @@
 
 namespace window_core
 {
-
     static class RenderQueue
     {
         public static Queue<RenderChunk> Rendering = new Queue<RenderChunk>();

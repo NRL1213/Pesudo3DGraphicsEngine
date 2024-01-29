@@ -73,14 +73,6 @@ namespace window_core
         {2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}, // 64
         };
 
-        //Color
-        //Red = 1
-        //Blue = 2
-        //Yellow = 3
-        //Green = 4
-        //Magenta = 5
-        //While = Any other
-
         // First Number is Row Top Row is 0; Second Number is column Leftmost is 0
         public static Vector2 Player = new Vector2(33, 33);
 
